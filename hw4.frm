@@ -268,9 +268,112 @@ Next i
 sortrnd = "sortrnd"
 End Function
 
+Static Function leaveoneout(ByVal obs As Double)
+Dim tempobs As Double
+Dim tempdist(60) As Double
+Dim tempgnum(60) As Double
+Dim tempgene() As Double
+Dim kgnum() As Double
+Dim kdist() As Double
+Dim tempk As Double
+Dim gnumcounter As Double
+Dim temppredclass As Double
+Dim sortrndout As String
+Dim ans As String
+ReDim tempgene(g - 1)
+ReDim kgnum(k - 1)
+ReDim kdist(k - 1)
+For i = 0 To UBound(tempgene)
+tempgene(i) = genenumber(i)
+Next i
+gnumcounter = 0
+tempobs = obs
+tempk = k
+ans = ""
 
+
+For i = 1 To 62
+If (i = tempobs) Then
+GoTo forend
+End If
+tempgnum(gnumcounter) = i
+gnumcounter = gnumcounter + 1
+forend:
+Next i
+
+For i = 0 To 60
+tempdist(i) = distance(tempobs, tempgnum(i), tempgene)
+Next i
+
+sortrndout = sortrnd(tempgnum, tempdist)
+
+For i = 0 To (tempk - 1)
+kgnum(i) = tempgnum(i) '這是obs
+kdist(i) = tempdist(i)
+Next i
+
+
+temppredclass = weightvote(kgnum, kdist)
+
+If (temppredclass = Dblgene(0, tempobs)) Then
+ans = "y"
+Else
+ans = "n"
+End If
+
+
+
+leaveoneout = ans
+End Function
+
+Static Function weightvote(ByRef tempkobs() As Double, ByRef tempkdist() As Double)
+Dim predclass As Double
+Dim onecounter As Double
+Dim twocounter As Double
+onecounter = 0
+twocounter = 0
+predclass = 0
+
+
+For i = 0 To UBound(tempkobs)
+If (Dblgene(0, tempkobs(i)) = 1) Then
+
+onecounter = onecounter + (1 / (tempkdist(i)) ^ 2)
+Else
+twocounter = twocounter + (1 / (tempkdist(i)) ^ 2)
+End If
+Next i
+
+If (onecounter > twocounter) Then
+predclass = 1
+Else
+predclass = 2
+End If
+
+
+weightvote = predclass
+End Function
+
+'ok
 Private Sub summit_Click()
 List1.Clear
+Dim g_now As Double
+Dim k_now As Double
+Dim ycounter As Double
+Dim correctrate As Double
+g_now = g
+k_now = k
+ycounter = 0
+
+
+For i = 1 To 62
+If (leaveoneout(i) = "y") Then
+ycounter = ycounter + 1
+End If
+Next i
+correctrate = (ycounter / 62)
+List1.AddItem correctrate
+
 '把Dblgene反轉
 'For i = 0 To 62
 'For j = 0 To 2000
@@ -286,9 +389,7 @@ List1.Clear
 'List1.AddItem dist
 
 
-'For i = 1 To 62
-'
-'Next i
+
 End Sub
 
 Static Function distance(ByVal xindex As Double, ByVal yindex As Double, ByRef attrarray() As Double)

@@ -177,13 +177,14 @@ Close #1
 'Next j
 'Next i
 List1.AddItem "Read success"
-
+'List1.AddItem Dblgene(1, 3)
+'List1.AddItem Dblgene(2, 3)
 End Sub
 
 Private Sub score_Click()
 List1.Clear
 List1.AddItem "-----Score-----"
-'測試sortrnd
+'測試sortrndi
 'Dim test1(2) As Double
 'Dim test2(2) As Double
 'Dim out As String
@@ -197,7 +198,7 @@ List1.AddItem "-----Score-----"
 'List1.AddItem CStr(test2(i))
 'List1.AddItem CStr(test1(i))
 'Next i
-'out = sortrnd(test2, test1)
+'out = sortrndi(test2, test1)
 'For i = 0 To 2
 'List1.AddItem CStr(test2(i))
 'List1.AddItem CStr(test1(i))
@@ -244,7 +245,7 @@ Next i
 'GoTo scoreend
 'scoreend:
 End Sub
-
+'大到小
 Static Function sortrnd(ByRef tempdataindex() As Double, ByRef temprndarray() As Double)
 
 Dim tmp As Double
@@ -266,6 +267,29 @@ Next i
 
 
 sortrnd = "sortrnd"
+End Function
+'小到大
+Static Function sortrndi(ByRef tempdataindex() As Double, ByRef temprndarray() As Double)
+
+Dim tmp As Double
+Dim tmpindex As Double
+
+For i = 0 To UBound(tempdataindex)
+    For j = i To UBound(tempdataindex)
+        If temprndarray(i) > temprndarray(j) Then
+            tmp = temprndarray(i)
+            temprndarray(i) = temprndarray(j)
+            temprndarray(j) = tmp
+            
+            tmpindex = tempdataindex(i)
+            tempdataindex(i) = tempdataindex(j)
+            tempdataindex(j) = tmpindex
+        End If
+    Next j
+Next i
+
+
+sortrndi = "sortrnd"
 End Function
 
 Static Function leaveoneout(ByVal obs As Double)
@@ -305,13 +329,17 @@ For i = 0 To 60
 tempdist(i) = distance(tempobs, tempgnum(i), tempgene)
 Next i
 
-sortrndout = sortrnd(tempgnum, tempdist)
+sortrndout = sortrndi(tempgnum, tempdist)
 
 For i = 0 To (tempk - 1)
 kgnum(i) = tempgnum(i) '這是obs
 kdist(i) = tempdist(i)
+
+'List1.AddItem kgnum(i)
+'List1.AddItem kdist(i)
 Next i
 
+'List1.AddItem "---------------------"
 
 temppredclass = weightvote(kgnum, kdist)
 
@@ -325,24 +353,29 @@ End If
 
 leaveoneout = ans
 End Function
-
+'ok
 Static Function weightvote(ByRef tempkobs() As Double, ByRef tempkdist() As Double)
 Dim predclass As Double
 Dim onecounter As Double
 Dim twocounter As Double
+Dim kobs() As Double
+Dim kdist() As Double
+kobs = tempkobs()
+kdist = tempkdist()
 onecounter = 0
 twocounter = 0
 predclass = 0
 
 
-For i = 0 To UBound(tempkobs)
-If (Dblgene(0, tempkobs(i)) = 1) Then
-
+For i = 0 To UBound(kobs)
+If (Dblgene(0, kobs(i)) = 1) Then
+'debug'If (1 = 1) Then
 onecounter = onecounter + (1 / (tempkdist(i)) ^ 2)
 Else
 twocounter = twocounter + (1 / (tempkdist(i)) ^ 2)
 End If
 Next i
+
 
 If (onecounter > twocounter) Then
 predclass = 1
@@ -357,22 +390,38 @@ End Function
 'ok
 Private Sub summit_Click()
 List1.Clear
+'GoTo summitend
+
 Dim g_now As Double
 Dim k_now As Double
 Dim ycounter As Double
 Dim correctrate As Double
+Dim tempans As String
 g_now = g
 k_now = k
 ycounter = 0
 
 
 For i = 1 To 62
-If (leaveoneout(i) = "y") Then
+tempans = leaveoneout(i)
+If (tempans = "y") Then
 ycounter = ycounter + 1
 End If
 Next i
 correctrate = (ycounter / 62)
 List1.AddItem correctrate
+
+summitend:
+
+'debugweightvote
+'Dim test1(1) As Double
+'Dim test2(1) As Double
+'Dim ans As Double
+'test1(0) = 1
+'test1(1) = 2
+'test2(0) = 2
+'test2(1) = 4
+'ans = weightvote(test1, test2)
 
 '把Dblgene反轉
 'For i = 0 To 62
@@ -382,16 +431,18 @@ List1.AddItem correctrate
 'Next i
 
 '測試 distance
-'Dim gene(0) As Double
+'Dim gene(1) As Double
 'Dim dist As Double
-'gene(0) = 6
-'dist = distance(3, 5, gene)
+'gene(0) = 5
+'gene(1) = 6
+'dist = distance(1, 2, gene)
 'List1.AddItem dist
 
 
 
-End Sub
 
+End Sub
+'ok
 Static Function distance(ByVal xindex As Double, ByVal yindex As Double, ByRef attrarray() As Double)
 Dim dimnumber As Double
 Dim xydistance As Double
@@ -431,10 +482,7 @@ End Function
 
 Private Sub tvalue_Click()
 List1.Clear
-Dim file As String
-Dim m, k, p, q As Integer
-Dim tmp As Double
-file = filename
+List1.AddItem "-----Tvalue-----"
 'declare variable
 Dim counter As Integer
 Dim n1 As Integer
@@ -443,6 +491,7 @@ Dim class() As String
 Dim gene() As String
 Dim Dblgene(62) As Double
 Dim Egene() As String
+Dim sortout As String
 Dim ten As Double
 Dim n1array(62) As Integer
 Dim n2array(62) As Integer
@@ -458,10 +507,6 @@ Dim t As Double
 Dim output, ke, it
 Dim outputarray(2000) As Double
 Set output = CreateObject("Scripting.Dictionary")
-Dim c1 As Double
-Dim c2 As Double
-c1 = 0
-c2 = 0
 
 'assign value
 counter = -1
@@ -545,26 +590,20 @@ Do While Not EOF(1)
 Loop
 Close #1
 
+For i = 0 To UBound(genescore)
+genescore(i) = outputarray(i + 1)
+genenumber(i) = i + 1
 
-For k = 1 To 2000
-    For m = k To 2000
-        If outputarray(k) > outputarray(m) Then
-            tmp = outputarray(k)
-            outputarray(k) = outputarray(m)
-            outputarray(m) = tmp
-        End If
-    Next m
-Next k
+'List1.AddItem genenumber(i)
+'List1.AddItem genescore(i)
+Next i
 
-For p = 1 To 2000
-    For q = 0 To 1999
-        If output.Item(q) = outputarray(p) Then
-            List1.AddItem "Gene seq  " & CStr(q) & vbTab & "t =   " & CStr(outputarray(p))
-            'tvaluearray(0, c2) = CDbl(q)
-            'tvaluearray(1, c2) = CDbl(outputarray(p))
-            'List1.AddItem c2
-            'c2 = c2 + 1
-        End If
-    Next q
-Next p
+sortout = sortrnd(genenumber, genescore)
+
+For i = 0 To 1999
+'List1.AddItem genenumber(i)
+'List1.AddItem genescore(i)
+List1.AddItem "Gene seq  " & CStr(genenumber(i)) & vbTab & "Score =   " & CStr(genescore(i))
+Next i
+
 End Sub

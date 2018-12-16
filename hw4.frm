@@ -477,9 +477,11 @@ ycounter2 = 0
 
 
 For i = 1 To 62
+
 tempans = leaveoneout(i)
 tempans2 = leaveoneout2(i)
 If (tempans = "y") Then
+'List1.AddItem i
 ycounter = ycounter + 1
 End If
 If (tempans2 = "y") Then
@@ -516,7 +518,7 @@ summitend:
 'gene(0) = 493
 'gene(1) = 377
 'gene(2) = 1423
-'dist = distance(1, 2, gene)
+'dist = distance(60, 62, gene)
 'List1.AddItem dist
 
 

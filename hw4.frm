@@ -11,9 +11,9 @@ Begin VB.Form form1
    StartUpPosition =   3  '系統預設值
    Begin VB.ListBox List1 
       Height          =   6720
-      Left            =   240
+      Left            =   120
       TabIndex        =   10
-      Top             =   1440
+      Top             =   1320
       Width           =   12135
    End
    Begin VB.CommandButton read 
@@ -100,6 +100,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'原因1:排序的大於小於是否有加等號
+'原因2:大到小排序後我是從後面取回來
 Dim filename As String
 Dim g As Double
 Dim k As Double
@@ -325,8 +327,10 @@ gnumcounter = gnumcounter + 1
 forend:
 Next i
 
+'List1.AddItem tempobs
 For i = 0 To 60
 tempdist(i) = distance(tempobs, tempgnum(i), tempgene)
+'List1.AddItem tempdist(i)
 Next i
 
 sortrndout = sortrndi(tempgnum, tempdist)
@@ -353,6 +357,72 @@ End If
 
 leaveoneout = ans
 End Function
+
+Static Function leaveoneout2(ByVal obs As Double)
+Dim tempobs As Double
+Dim tempdist(60) As Double
+Dim tempgnum(60) As Double
+Dim tempgene() As Double
+Dim kgnum() As Double
+Dim kdist() As Double
+Dim tempk As Double
+Dim gnumcounter As Double
+Dim temppredclass As Double
+Dim sortrndout As String
+Dim ans As String
+ReDim tempgene(g - 1)
+ReDim kgnum(k - 1)
+ReDim kdist(k - 1)
+For i = 0 To UBound(tempgene)
+tempgene(i) = genenumber(1999 - i)
+'List1.AddItem tempgene(i)
+Next i
+gnumcounter = 0
+tempobs = obs
+tempk = k
+ans = ""
+
+
+For i = 1 To 62
+If (i = tempobs) Then
+GoTo forend
+End If
+tempgnum(gnumcounter) = i
+gnumcounter = gnumcounter + 1
+forend:
+Next i
+
+'List1.AddItem tempobs
+For i = 0 To 60
+tempdist(i) = distance(tempobs, tempgnum(i), tempgene)
+'List1.AddItem tempdist(i)
+Next i
+
+sortrndout = sortrndi(tempgnum, tempdist)
+
+For i = 0 To (tempk - 1)
+kgnum(i) = tempgnum(i) '這是obs
+kdist(i) = tempdist(i)
+
+'List1.AddItem kgnum(i)
+'List1.AddItem kdist(i)
+Next i
+
+'List1.AddItem "---------------------"
+
+temppredclass = weightvote(kgnum, kdist)
+
+If (temppredclass = Dblgene(0, tempobs)) Then
+ans = "y"
+Else
+ans = "n"
+End If
+
+
+
+leaveoneout2 = ans
+End Function
+
 'ok
 Static Function weightvote(ByRef tempkobs() As Double, ByRef tempkdist() As Double)
 Dim predclass As Double
@@ -395,21 +465,31 @@ List1.Clear
 Dim g_now As Double
 Dim k_now As Double
 Dim ycounter As Double
+Dim ycounter2 As Double
 Dim correctrate As Double
+Dim correctrate2 As Double
 Dim tempans As String
+Dim tempans2 As String
 g_now = g
 k_now = k
 ycounter = 0
+ycounter2 = 0
 
 
 For i = 1 To 62
 tempans = leaveoneout(i)
+tempans2 = leaveoneout2(i)
 If (tempans = "y") Then
 ycounter = ycounter + 1
 End If
+If (tempans2 = "y") Then
+ycounter2 = ycounter2 + 1
+End If
 Next i
 correctrate = (ycounter / 62)
-List1.AddItem correctrate
+correctrate2 = (ycounter2 / 62)
+List1.AddItem "由大到小排序 正確率 : " + CStr(correctrate)
+List1.AddItem "由小到大排序 正確率 : " + CStr(correctrate2)
 
 summitend:
 
@@ -431,10 +511,11 @@ summitend:
 'Next i
 
 '測試 distance
-'Dim gene(1) As Double
+'Dim gene(2) As Double
 'Dim dist As Double
-'gene(0) = 5
-'gene(1) = 6
+'gene(0) = 493
+'gene(1) = 377
+'gene(2) = 1423
 'dist = distance(1, 2, gene)
 'List1.AddItem dist
 

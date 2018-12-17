@@ -66,7 +66,6 @@ Begin VB.Form form1
       Height          =   495
       Left            =   120
       TabIndex        =   0
-      Text            =   "colon.txt"
       Top             =   600
       Width           =   1815
    End
@@ -87,12 +86,12 @@ Begin VB.Form form1
       Width           =   1575
    End
    Begin VB.Label Label1 
-      Caption         =   "檔名"
+      Caption         =   "檔名(colon.txt)               程式碼頂端有系統操作介紹"
       Height          =   255
       Left            =   240
       TabIndex        =   1
       Top             =   240
-      Width           =   1815
+      Width           =   3975
    End
 End
 Attribute VB_Name = "form1"
@@ -100,8 +99,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'原因1:排序的大於小於是否有加等號
-'原因2:大到小排序後我是從後面取回來
+'系統操作介紹
+
+'檔名,Number of Gene,K value皆須手動輸入
+
+'要看tvalue從大到小的排序:輸入檔名->按讀檔->按tvalue
+'要看score從大到小的排序:輸入檔名->按讀檔->按score
+
+'如果先看score的正確率,之後要看tvalue的話需要重新run程式,反之亦然
+
+'假設想看score中Number of Gene=50,K value=3,操作方式如下
+'輸入檔名->按讀檔->按score->輸入Number of Gene->輸入K value->按確定
+
+'如果是在同樣是score或是tvalue下看不同Number of Gene與K value不須重run程式,步驟如下
+'重新輸入Number of Gene->重新輸入K value->按確定
+
+
 Dim filename As String
 Dim g As Double
 Dim k As Double
@@ -490,8 +503,8 @@ End If
 Next i
 correctrate = (ycounter / 62)
 correctrate2 = (ycounter2 / 62)
-List1.AddItem "由大到小排序 正確率 : " + CStr(correctrate)
-List1.AddItem "由小到大排序 正確率 : " + CStr(correctrate2)
+List1.AddItem "取前n大的正確率 : " + CStr(correctrate)
+List1.AddItem "取前n小的正確率 : " + CStr(correctrate2)
 
 summitend:
 
